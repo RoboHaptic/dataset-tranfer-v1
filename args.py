@@ -15,7 +15,7 @@ parser.add_argument('-gpu', type=int, default=0, help='set which gpu to use')
 parser.add_argument('-batch_size', type=int, default=64, help='batch size')
 parser.add_argument('-epoch', type=int, default=1200, help='total epochs')
 parser.add_argument('-lr', type=float, default=1e-5, help='learning rate')
-parser.add_argument('-set_weight_decay', type=float, default=1, help='weight_decay')
+parser.add_argument('-set_weight_decay', type=float, default=0, help='weight_decay')
 
 # Test setting
 parser.add_argument('-test', action='store_true', help='Only test')

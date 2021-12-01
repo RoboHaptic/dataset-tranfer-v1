@@ -1,6 +1,6 @@
 # Dataset-transfer
 
-This is the 1st version for the implementation of dataset-transfer, which only includes loss function for task classification. In 2nd implementation, subject discriminator will be added. 
+This is the 1st version for the implementation of dataset-transfer, which only includes loss function for task classification. In 2nd implementation, GAN-based augmentation method will be added. 
 
 Be free to play with it.
 
@@ -37,7 +37,7 @@ After downloading the datasets, unzip them into `./data/BCICompetition-IV2a/` an
 
 ### Training
 
-- Help function
+- Help function:
 ```
 usage: main.py [-h] [-dataset DATASET] [-load LOAD] [-train] [-full_train]
                [-save] [-batch_size BATCH_SIZE] [-epoch EPOCH] [-lr LR]
@@ -76,11 +76,11 @@ python main.py -dataset iv_2a -train
 
 - Visualization is only for Linux temporarily, I will improve it ASAP to make it possible on Window as well.
 
-- Visualization by class
+- Visualization by class:
 
 <img src="https://github.com/RoboHaptic/dataset-tranfer-v1/blob/main/visualization/iv_2a_class.png" width="800"/>
 
-- Visualization by subject
+- Visualization by subject:
 
 <img src="https://github.com/RoboHaptic/dataset-tranfer-v1/blob/main/visualization/iv_2a_sub.png" width="800"/>
 

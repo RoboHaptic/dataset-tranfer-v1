@@ -73,7 +73,8 @@ python main.py -dataset iv_2a -train
 
 
 ### Visualization
-<img src="https://github.com/RoboHaptic/dataset-tranfer-v1/blob/main/visualization/iv_2a_class.png" width="800"/>
+<img src="https://github.com/RoboHaptic/dataset-tranfer-v1/blob/main/visualization/iv_2a_class.png" width="400"/>
+<img src="https://github.com/RoboHaptic/dataset-tranfer-v1/blob/main/visualization/iv_2a_sub.png" width="400"/>
 - Visualization is only for Linux temporarily, I will improve it ASAP to make it possible on Window as well.
 
 

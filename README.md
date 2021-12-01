@@ -69,7 +69,7 @@ optional arguments:
 ```
 python main.py -dataset iv_2a -train 
 ```
-- To monitor the training in real-time, go to [wandb.ai](https://wandb.ai).
+- As for real-time training, go to [wandb.ai](https://wandb.ai).
 
 - Visualization is only for Linux temporarily, I will improve it ASAP to make it possible on Window as well.
 

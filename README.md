@@ -11,7 +11,7 @@ Be free to play with it.
 conda create -n dataset_transfer python=3.7
 conda activate dataset_transfer
 ```
-- Install [PyTorch](http://pytorch.org)
+- Install [PyTorch](http://pytorch.org) with CUDA 10.2:
 ```bash
  conda install pytorch==1.7.0 torchvision==0.8.0 torchaudio==0.7.0 cudatoolkit=10.2 -c pytorch
 ```

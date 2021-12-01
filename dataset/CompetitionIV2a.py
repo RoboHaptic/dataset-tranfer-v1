@@ -12,7 +12,7 @@ INTERSECTION = ['Fz', 'FC3', 'FC1', 'FC2', 'FC4', 'C5', 'C3', 'C1', 'Cz', 'C2', 
 
 def competition_iv_2a():
 
-    root = '/media/yk/ac72589c-5358-4228-bed2-b44d0e56ca00/home/yk/yk/BH_baseline/dataset/BCICompetition-IV2a/'
+    root = './data/BCICompetition-IV2a/'
     p_train, p_test = root + 'train/', root + 'test/'
 
     train, test = None, None

@@ -15,7 +15,7 @@ INTERSECTION = ['Fz', 'FC3', 'FC1', 'FC2', 'FC4', 'C5', 'C3', 'C1', 'Cz', 'C2', 
 
 def sub54():
 
-    path = '/media/yk/ac72589c-5358-4228-bed2-b44d0e56ca00/home/yk/yk/Dataset/Old/sub54/shorten_channel/'
+    path = './data/sub54/'
 
     x, y = np.load(path + 'sub_x.npy'), np.load(path + 'sub_y.npy')
     x = np.array(x, dtype=np.float32)

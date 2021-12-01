@@ -17,9 +17,14 @@ conda install pytorch==1.7.0 torchvision==0.8.0 torchaudio==0.7.0 cudatoolkit=10
 ```
 
 ### Datasets
-- *Competition IV Data sets 2a*. [Link](http://www.bbci.de/competition/iv/#dataset2a)
-- *EEG dataset and OpenBMI toolbox for three BCI paradigms: an investigation into BCI illiteracy*. [Link](http://gigadb.org/dataset/100542)
+- **Competition IV Data sets 2a**. [Link](http://www.bbci.de/competition/iv/#dataset2a)
+- **EEG dataset and OpenBMI toolbox for three BCI paradigms: an investigation into BCI illiteracy**. [Link](http://gigadb.org/dataset/100542)
 
 #### Preprocess the data
-- The original format of *Competition IV Data sets 2a* 
+For the correspondence of datasets, only 21 shared channels are reserved. (['Fz', 'FC3', 'FC1', 'FC2', 'FC4', 'C5', 'C3', 'C1', 'Cz', 'C2', 'C4', 'C6', 'CP3', 'CP1', 'CPz', 'CP2', 'CP4', 'P1', 'Pz', 'P2', 'POz'])
 
+- The original file format of **Competition IV Data sets 2a** is *.gdf. As an alternative, we provide preprocessed .mat file. Click [here](https://drive.google.com/file/d/1CIYTVuTqGNJuAWJ4e3HC7AXegTw_WuiJ/view?usp=sharing).
+
+- We also provide the preprocessed data for KU data. Click [here](https://drive.google.com/file/d/1VPyuBzL9Y43vqAfe2yoXrf9EUPWOBNLe/view?usp=sharing).
+
+After downloading the datasets, unzip them into `./data/BCICompetition-IV2a/` and `./data/sub54/`, respectively. You have to create the folder for each dataset yourself.

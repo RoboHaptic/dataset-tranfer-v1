@@ -17,7 +17,9 @@ conda install pytorch==1.7.0 torchvision==0.8.0 torchaudio==0.7.0 cudatoolkit=10
 ```
 
 ### Datasets
-- Competition IV Data sets 2a [link](http://www.bbci.de/competition/iv/#dataset2a)
-- Multimodal signal dataset for 11 intuitive movement tasks from single upper extremity during multiple recording sessions [link](http://gigadb.org/dataset/100788)
+- *Competition IV Data sets 2a*. [Link](http://www.bbci.de/competition/iv/#dataset2a)
+- *EEG dataset and OpenBMI toolbox for three BCI paradigms: an investigation into BCI illiteracy*. [Link](http://gigadb.org/dataset/100542)
 
+#### Preprocess the data
+- The original format of *Competition IV Data sets 2a* 
 

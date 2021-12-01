@@ -2,7 +2,7 @@
 
 This is the 1st version for the implementation of dataset-transfer, which only includes loss function for task classification. In 2nd implementation, GAN-based augmentation method will be added. 
 
-Be free to play with it.
+Be free to play with it. It's better to use under Linux.
 
 ## Getting Started
 ### Installation

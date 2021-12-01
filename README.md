@@ -17,9 +17,10 @@ conda install pytorch==1.7.0 torchvision==0.8.0 torchaudio==0.7.0 cudatoolkit=10
 ```
 - You also need to install [wandb](https://wandb.ai/quickstart/pytorch) for visualization. Please follow the website instruction to configure.
 
-- For other dependencies, you need 
+- For other dependencies, you may need: 
 ```bash
 pip install scipy
+pip install matplotlib
 ```
 
 ### Datasets

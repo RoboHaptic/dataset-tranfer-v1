@@ -65,9 +65,13 @@ optional arguments:
   -test                 Only test
   -visualizer           Visualization
 ```
-- To simply start a new train in the terminal, at least you have to specific a dataset(from {'iv_2a', 'sub54'}) to train:
+- To simply start a new train in the terminal, at least you have to specific a dataset([*iv_2a*, *sub54*]) to train:
 ```
 python main.py -dataset iv_2a -train 
 ```
+- To monitor the training in real-time, go to [wandb.ai](wandb.ai).
+
+- Visualization is only for Linux temporarily, I will improve it ASAP to make it possible on Window as well.
+
 
 

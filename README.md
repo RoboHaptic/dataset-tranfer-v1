@@ -47,21 +47,21 @@ usage: main.py [-h] [-dataset DATASET] [-load LOAD] [-train] [-full_train]
 Baseline method for 2-class MI task classification
 
 optional arguments:
-  -h, --help            show this help message and exit
-  -dataset DATASET      dataset for train/test
-  -load LOAD            load model
+  -h, --help            Show this help message and exit
+  -dataset DATASET      Specify ataset for train/test
+  -load LOAD            Load model
   -train                A complete train
-  -full_train           no validation and test
-  -save                 save model
+  -full_train           No validation and test
+  -save                 Save model
   -batch_size BATCH_SIZE
-                        batch size
-  -epoch EPOCH          total epochs
-  -lr LR                learning rate
-  -n_workers N_WORKERS  num_workers
+                        Batch size
+  -epoch EPOCH          Total epochs
+  -lr LR                Learning rate
+  -n_workers N_WORKERS  Num_workers
   -set_weight_decay SET_WEIGHT_DECAY
-                        weight_decay
-  -lambd LAMBD          weight for balancing loss function
-  -step                 A complete train
+                        Weight_decay
+  -lambd LAMBD          Weight for balancing loss function
+  -step                 Cancel scheduler
   -test                 Only test
   -visualizer           Visualization
 ```

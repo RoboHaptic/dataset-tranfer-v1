@@ -71,6 +71,9 @@ python main.py -dataset iv_2a -train
 ```
 - As for real-time training, go to [wandb.ai](https://wandb.ai).
 
+
+### Visualization
+<img src="https://github.com/RoboHaptic/dataset-tranfer-v1/blob/main/visualization/iv_2a_class.png" width="800"/>
 - Visualization is only for Linux temporarily, I will improve it ASAP to make it possible on Window as well.
 
 

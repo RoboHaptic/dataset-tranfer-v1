@@ -1,1 +1,0 @@
-{"Epoch": 39, "Loss": 1.2272101640701294, "Training_cls_acc_0": 0.7294921875, "Training_sub_acc_0": 0.51806640625, "Validation_cls_acc_0": 0.51424241065979, "Learning rate": 1e-05, "_runtime": 158, "_timestamp": 1638359536, "_step": 39}

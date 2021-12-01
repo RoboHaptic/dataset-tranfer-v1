@@ -15,7 +15,7 @@ INTERSECTION = ['Fz', 'FC3', 'FC1', 'FC2', 'FC4', 'C5', 'C3', 'C1', 'Cz', 'C2', 
 
 def sub54():
 
-    path = './data/sub54/'
+    path = './data/sub_54/'
 
     x, y = np.load(path + 'sub_x.npy'), np.load(path + 'sub_y.npy')
     x = np.array(x, dtype=np.float32)
@@ -91,7 +91,7 @@ def shorten_sub54():
         x = np.load(path + 'sub{:02d}_x.npy'.format(sub))
         y = np.load(path + 'sub{:02d}_y.npy'.format(sub))
 
-sub54()
+# sub54()
 
 
 # pos = channel_alignment_position(CHANNELS, INTERSECTION)

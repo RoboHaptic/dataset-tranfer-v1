@@ -1,8 +1,8 @@
 import torch
 from args import args
 import numpy as np
-from tsnecuda import TSNE
-import matplotlib.pyplot as plt
+# from tsnecuda import TSNE
+# import matplotlib.pyplot as plt
 
 
 def visualizer(data, label, batch=None):
@@ -16,9 +16,9 @@ def visualizer(data, label, batch=None):
     label = list(label.squeeze(1))
     scatter = plt.scatter(x_embedded[:, 0], x_embedded[:, 1], s=10, c=label, cmap='rainbow')
     plt.legend(handles=scatter.legend_elements()[0], labels=[str(i) for i in range(label[len(label)-1]+1)])
-    # plt.show()
-    if batch is not None:
-        plt.savefig('visualization/{}.png'.format(batch), bbox_inches='tight')
+    plt.show()
+    # if batch is not None:
+    #     plt.savefig('visualization/{}.png'.format(batch), bbox_inches='tight')
 
 
 def to_tensor(data, label):

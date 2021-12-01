@@ -15,6 +15,26 @@ class Conv2dWithConstraint(nn.Conv2d):
 
 
 class EEGNet(nn.Module):
+    def __init__(self, n_classes=4, n_subjects=9, channels=60, samples=151,
+                 dropoutRate=0.5, kernelLength=64, kernelLength2=16, F1=8,
+                 D=2, F2=16):
+        super(EEGNet, self).__init__()
+        self.F1 = F1
+        self.F2 = F2
+        self.D = D
+        self.samples = samples
+        self.n_classes = n_classes
+        self.channels = channels
+        self.kernelLength = kernelLength
+        self.kernelLength2 = kernelLength2
+        self.dropoutRate = dropoutRate
+
+        self.blocks = self.InitialBlocks(dropoutRate)
+        self.blockOutputSize = self.CalculateOutSize(self.blocks, channels, samples)
+        self.linear = self.LinearBlock(self.F2 * self.blockOutputSize[1])
+        self.cls = self.ClassBlock(n_classes)
+        self.subject = self.SubjectBlock(n_subjects)
+
     def InitialBlocks(self, dropoutRate, *args, **kwargs):
         block1 = nn.Sequential(
             nn.Conv2d(1, self.F1, (1, self.kernelLength), stride=1, padding=(0, self.kernelLength // 2), bias=False),
@@ -42,19 +62,26 @@ class EEGNet(nn.Module):
             nn.Dropout(p=dropoutRate))
         return nn.Sequential(block1, block2)
 
-    def ClassifierBlock(self, inputSize, n_classes):
+    def LinearBlock(self, inputSize):
         return nn.Sequential(
-            nn.Linear(inputSize, n_classes, bias=False),
+            nn.Linear(inputSize, 1024),
+            nn.ReLU(),
+            nn.Linear(1024, 128),
+            nn.ReLU())
+
+    def ClassBlock(self, n_classes):
+        return nn.Sequential(
+            nn.Linear(128, n_classes),
             nn.Softmax(dim=1))
 
-    # def SubjectBlock(self, inputSize, n_classes):
-    #     return nn.Sequential(
-    #         nn.Linear(inputSize, n_classes, bias=False),
-    #         nn.Softmax(dim=1))
+    def SubjectBlock(self, n_classes):
+        return nn.Sequential(
+            nn.Linear(128, n_classes),
+            nn.Softmax(dim=1))
 
     def CalculateOutSize(self, model, channels, samples):
         '''
-        Calculate the output based on input size.
+        Calculate the output based on input size. -
         model is from nn.Module and inputSize is a array.
         '''
         data = torch.rand(1, 1, channels, samples)
@@ -62,29 +89,11 @@ class EEGNet(nn.Module):
         out = model(data).shape
         return out[2:]
 
-    def __init__(self, n_classes=4, n_subjects=9, channels=60, samples=151,
-                 dropoutRate=0.5, kernelLength=64, kernelLength2=16, F1=8,
-                 D=2, F2=16):
-        super(EEGNet, self).__init__()
-        self.F1 = F1
-        self.F2 = F2
-        self.D = D
-        self.samples = samples
-        self.n_classes = n_classes
-        self.channels = channels
-        self.kernelLength = kernelLength
-        self.kernelLength2 = kernelLength2
-        self.dropoutRate = dropoutRate
-
-        self.blocks = self.InitialBlocks(dropoutRate)
-        self.blockOutputSize = self.CalculateOutSize(self.blocks, channels, samples)
-        self.classifierBlock = self.ClassifierBlock(self.F2 * self.blockOutputSize[1], n_classes)
-        # self.sub = self.SubjectBlock(self.F2 * self.blockOutputSize[1], n_subjects)
-
     def forward(self, x):
         x = self.blocks(x)
         x = x.view(x.size()[0], -1)  # Flatten
+        x = self.linear(x)
         feature = x.detach()
-        cls = self.classifierBlock(x)
-        # subject = self.sub(x)
-        return cls, feature # , subject
+        cls = self.cls(x)
+        sub = self.subject(x)
+        return cls, feature, sub

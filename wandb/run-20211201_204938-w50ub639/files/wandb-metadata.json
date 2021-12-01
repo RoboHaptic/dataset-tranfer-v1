@@ -1,0 +1,28 @@
+{
+    "os": "Windows-10-10.0.22000-SP0",
+    "python": "3.7.11",
+    "heartbeatAt": "2021-12-01T11:49:38.995215",
+    "startedAt": "2021-12-01T11:49:38.048632",
+    "docker": null,
+    "gpu": "NVIDIA GeForce GTX 1660 Ti",
+    "gpu_count": 1,
+    "cpu_count": 12,
+    "cuda": null,
+    "args": [
+        "-dataset",
+        "iv_2a",
+        "-train"
+    ],
+    "state": "running",
+    "program": "C:/Users/yk/Desktop/dataset-tranfer-v1/main.py",
+    "codePath": "main.py",
+    "git": {
+        "remote": "git@github.com:RoboHaptic/dataset-tranfer-v1.git",
+        "commit": "46a061a37c55817ebbfbe5bb9361a9d73a72310a"
+    },
+    "email": "kangyin1997@gmail.com",
+    "root": "C:/Users/yk/Desktop/dataset-tranfer-v1",
+    "host": "DESKTOP-43HO22I",
+    "username": "yk",
+    "executable": "E:\\anaconda3\\envs\\dataset_transfer\\python.exe"
+}

@@ -15,16 +15,12 @@ def config():
 
     # CHANNELS, SAMPLES, NUM_SUBJECTS
     if args.dataset == 'iv_2a':
-        args.lr, args.batch_size = 1e-5, 64
+        args.lr, args.batch_size, args.n_workers = 1e-5, 64, 1
         return 21, 1000, 9
-    elif args.dataset == 'sub54':
-        args.lr, args.batch_size = 1e-5, 128
-        return 21, 1000, 54
 
-    wandb.config = {
-      "learning_rate": args.lr,
-      "epochs": args.epoch,
-      "batch_size": args.batch_size}
+    elif args.dataset == 'sub54':
+        args.lr, args.batch_size, args.n_workers = 1e-4, 128, 2
+        return 21, 1000, 54
 
 
 def train(test_sub=None):
@@ -38,10 +34,10 @@ def train(test_sub=None):
     model.to('cuda:{}'.format(args.gpu))
 
     loss_ce = nn.CrossEntropyLoss().to('cuda:{}'.format(args.gpu), non_blocking=True)
-    # loss_sub = loss_ce
+    loss_sub = loss_ce
 
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.set_weight_decay)
-    scheduler = lr_scheduler.StepLR(optimizer, step_size=int(args.epoch / 2), gamma=0.1)
+    scheduler = lr_scheduler.StepLR(optimizer, step_size=int(args.epoch / 3), gamma=0.1)
 
     if not args.full_train:
         valid_subject = int(np.random.rand() * NUM_SUBJECTS)
@@ -55,7 +51,7 @@ def train(test_sub=None):
     else:
         training_set = TrainingSet(dataset=args.dataset)
 
-    train_loader = DataLoader(dataset=training_set, batch_size=args.batch_size, shuffle=True, num_workers=1,
+    train_loader = DataLoader(dataset=training_set, batch_size=args.batch_size, shuffle=True, num_workers=args.n_workers,
                               prefetch_factor=80, pin_memory=True)
 
     for i in range(args.epoch+1):
@@ -72,18 +68,17 @@ def train(test_sub=None):
 
             # train_data, train_label = to_tensor(train_data, train_label)
             train_data, train_label, sub = train_data.to('cuda:{}'.format(args.gpu), non_blocking=True),\
-                                         train_label.to('cuda:{}'.format(args.gpu), dtype=torch.long, non_blocking=True),\
-                                         sub.to('cuda:{}'.format(args.gpu), dtype=torch.long, non_blocking=True)
+                                         train_label.to('cuda:{}'.format(args.gpu), non_blocking=True),\
+                                         sub.to('cuda:{}'.format(args.gpu), non_blocking=True)
 
             train_cls, _, train_sub = model(train_data)
-            loss = loss_ce(train_cls, train_label.squeeze(1)) # + loss_sub(train_sub, sub)
+            loss = args.lambd * loss_ce(train_cls, train_label.squeeze(1)) + (1 - args.lambd) * loss_sub(train_sub, sub)
             loss_acc += loss
 
             train_pred_cls = acc(train_cls, train_label)
             train_pred_cls_acc += train_pred_cls
-
-            # train_pred_sub = acc(train_sub, sub)
-            # train_pred_sub_acc += train_pred_sub
+            train_pred_sub = acc(train_sub, sub)
+            train_pred_sub_acc += train_pred_sub
 
             # loss_acc += (loss - loss_acc) / (batch+1)
             # pred_acc += (pred - pred_acc) / (batch+1)
@@ -102,9 +97,8 @@ def train(test_sub=None):
             for valid_batch, (sub, valid_data, valid_label) in enumerate(valid_loader):
 
                 valid_data, valid_label, sub = valid_data.to('cuda:{}'.format(args.gpu), non_blocking=True),\
-                                               valid_label.to('cuda:{}'.format(args.gpu), dtype=torch.long,
-                                                              non_blocking=True),\
-                                               sub.to('cuda:{}'.format(args.gpu), dtype=torch.long, non_blocking=True)
+                                               valid_label.to('cuda:{}'.format(args.gpu), non_blocking=True),\
+                                               sub.to('cuda:{}'.format(args.gpu), non_blocking=True)
 
                 # valid_data, valid_label = to_tensor(valid_data, valid_label)
                 valid_cls, _, valid_sub = model(valid_data)
@@ -116,11 +110,12 @@ def train(test_sub=None):
                 # valid_pred_sub_acc += valid_pred_sub
 
             vca = valid_pred_cls_acc / (valid_batch + 1)
+            # vsa = valid_pred_sub_acc / (valid_batch + 1)
 
             wandb.log({'Epoch': i,
                        'Loss': la,
                        'Training_cls_acc_{}'.format(test_sub): tca,
-                       # 'Training_sub_acc_{}'.format(test_sub): tsa,
+                       'Training_sub_acc_{}'.format(test_sub): tsa,
                        'Validation_cls_acc_{}'.format(test_sub): vca,
                        # 'Validation_sub_acc_{}'.format(test_sub): vsa,
                        'Learning rate': optimizer.state_dict().get('param_groups')[0].get('lr')
@@ -129,27 +124,34 @@ def train(test_sub=None):
             print('Epoch', i,
                   'Loss {:.2f}'.format(la),
                   'TCA {:.2f}'.format(tca),
-                  # 'TSA {:.2f}'.format(tsa),
+                  'TSA {:.2f}'.format(tsa),
                   'VCA {:.2f}'.format(vca),
                   # 'VSA {:.2f}'.format(vsa),
                   'Time Elapsed {:.2f}'.format(time.time() - start))
         else:
+            wandb.log({'Epoch': i,
+                       'Loss': la,
+                       'Training_cls_acc_{}'.format(test_sub): tca,
+                       'Training_sub_acc_{}'.format(test_sub): tsa,
+                       'Learning rate': optimizer.state_dict().get('param_groups')[0].get('lr')
+                       })
             print('Epoch', i,
                   'Loss {:.2f}'.format(la),
                   'TCA {:.2f}'.format(tca),
-                  # 'TSA {:.2f}'.format(tsa),
+                  'TSA {:.2f}'.format(tsa),
                   'Time Elapsed {:.2f}'.format(time.time() - start))
 
-        scheduler.step()
+        if args.step:
+            scheduler.step()
 
         # Save model
         if args.save & (i % args.epoch == 0) & (i > 0):
             if args.full_train:
                 torch.save(model.state_dict(),
-                           '/home/yk/Desktop/dataset_transfer/save//{}_fulltrain_epoch{}.pth'.format(args.dataset, i))
+                           './save/{}_fulltrain_epoch{}.pth'.format(args.dataset, i))
             else:
                 torch.save(model.state_dict(),
-                           '/home/yk/Desktop/dataset_transfer/save//{}_sub{}_epoch{}.pth'.format(args.dataset, test_sub, i))
+                           './save/{}_sub{}_epoch{}.pth'.format(args.dataset, test_sub, i))
 
     if not args.full_train:
         test(test_sub, model)
@@ -170,8 +172,8 @@ def test(test_sub, model=None):
     for test_batch, (sub, test_data, test_label) in enumerate(test_loader):
 
         test_data, test_label, sub = test_data.to('cuda:{}'.format(args.gpu), non_blocking=True),\
-                                test_label.to('cuda:{}'.format(args.gpu), dtype=torch.long, non_blocking=True),\
-                                sub.to('cuda:{}'.format(args.gpu), dtype=torch.long, non_blocking=True)
+                                test_label.to('cuda:{}'.format(args.gpu), non_blocking=True),\
+                                sub.to('cuda:{}'.format(args.gpu), non_blocking=True)
 
         test_cls, _, test_sub = model(test_data)
         test_pred_cls = acc(test_cls, test_label)
@@ -188,14 +190,13 @@ def test(test_sub, model=None):
 
 
 def visualization():
-
-    model = EEGNet(n_classes=2, channels=CHANNELS, samples=SAMPLES, dropoutRate=0.25)
+    model = EEGNet(n_classes=2, channels=CHANNELS, n_subjects=NUM_SUBJECTS, samples=SAMPLES, dropoutRate=0.25)
     model.to('cuda:{}'.format(args.gpu))
     model.load_state_dict(torch.load(args.load))
     model.eval()
 
-    total_data, total_label, total_sub = None, None, None
-    dataset_list = ['sub54']
+    data_cls, data_sub, label_cls, label_sub = None, None, None, None
+    dataset_list = ['iv_2a', 'sub54']
     num_sub_list = [9, 54]
     for i, name in enumerate(dataset_list):
 
@@ -203,26 +204,30 @@ def visualization():
 
         dataset = TrainingSet(dataset=name)
         dataloader = DataLoader(dataset=dataset, batch_size=400, shuffle=False)
-        
+
         for batch, (sub, data, label) in enumerate(dataloader):
             sub = sub.numpy()
             data = data.to('cuda:{}'.format(args.gpu), non_blocking=True)
             # label = label.to('cuda:{}'.format(args.gpu), non_blocking=True)
             if i > 0:
-                sub += num_sub_list[i-1]
+                sub += num_sub_list[i - 1]
                 # print(sub)
-            _, feature = model(data)
-            if total_data is None:
-                total_data, total_label, total_sub = feature, label, sub[:, np.newaxis]
+            vis_cls, feature, vis_sub = model(data)
+            vis_cls, vis_sub = vis_cls.detach(), vis_sub.detach()
+            if data_cls is None:
+                data_cls, data_sub, label_cls, label_sub = feature, feature, label, sub[:, np.newaxis]
             else:
-                total_data, total_label, total_sub = torch.cat((total_data, feature)), torch.cat((total_label, label)),\
-                                                     np.vstack((total_sub, sub[:, np.newaxis]))
+                data_cls, data_sub, label_cls, label_sub = torch.cat((data_cls, feature)), \
+                                                           torch.cat((data_sub, feature)), \
+                                                           torch.cat((label_cls, label)), \
+                                                           np.vstack((label_sub, sub[:, np.newaxis]))
+            # if batch == 20:
+            #     break
+            # visualizer(feature, label.numpy(), batch)
 
-            visualizer(feature, label.numpy(), batch)
-
-    print('{} points in total.'.format(total_data.shape[0]))
-    visualizer(total_data, total_label.numpy())
-    # visualizer(total_data, total_sub)
+    print('{} points in total.'.format(data_cls.shape[0]))
+    visualizer(data_cls, label_cls.numpy())
+    visualizer(data_sub, label_sub)
 
 
 if __name__ == "__main__":
@@ -234,6 +239,10 @@ if __name__ == "__main__":
 
     if args.train:
         wandb.init(project='DT_{}_{}_{}'.format(args.dataset, args.lr, args.batch_size, entity="kang97"))
+        wandb.config.update({
+            "initial_lr": args.lr,
+            "epochs": args.epoch,
+            "batch_size": args.batch_size})
 
     torch.cuda.set_device(args.gpu)
 

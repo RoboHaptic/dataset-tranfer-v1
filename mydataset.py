@@ -3,8 +3,6 @@ from torchvision import transforms, utils
 import numpy as np
 from dataset.CompetitionIV2a import competition_iv_2a
 from dataset.Subject54 import sub54
-import torch
-from args import args
 
 
 class OmniSet(Dataset):
@@ -17,21 +15,29 @@ class OmniSet(Dataset):
             self.data = competition_iv_2a()
 
         [self.x, self.y] = self.data
+        self.y = self.y.astype(np.int64)
 
         self.num_trial = 0
+        self.sub, self.idx = 0, 0
 
     def __len__(self):
         return self.num_trial * self.y.shape[0]
 
     def __getitem__(self, index):
 
-        sub, idx = int(index / self.num_trial), index % self.num_trial
-        # print(sub, idx)
-        # print(self.__len__())
-        signal, label = self.x[sub][idx], self.y[sub][idx]
-        # signal, label = self.to_tensor(signal, label)
+        # sub, idx = int(index / self.num_trial), index % self.num_trial
+        temp = self.sub
+        signal, label = self.x[self.sub][self.idx], self.y[self.sub][self.idx]
+        if (self.idx + 1) == self.num_trial:
+            self.sub += 1
+            self.idx = 0
+        else:
+            self.idx += 1
 
-        return sub, signal[np.newaxis, :], label
+        if (index + 1) == self.__len__():
+            self.sub, self.idx = 0, 0
+
+        return temp, signal[np.newaxis, :], label
 
 
 class TrainingSet(OmniSet):

@@ -53,4 +53,4 @@ def competition_iv_2a():
     return train
 
 
-competition_iv_2a()
+# competition_iv_2a()

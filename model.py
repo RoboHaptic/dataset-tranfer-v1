@@ -71,13 +71,11 @@ class EEGNet(nn.Module):
 
     def ClassBlock(self, n_classes):
         return nn.Sequential(
-            nn.Linear(128, n_classes),
-            nn.Softmax(dim=1))
+            nn.Linear(128, n_classes))
 
     def SubjectBlock(self, n_classes):
         return nn.Sequential(
-            nn.Linear(128, n_classes),
-            nn.Softmax(dim=1))
+            nn.Linear(128, n_classes))
 
     def CalculateOutSize(self, model, channels, samples):
         '''
